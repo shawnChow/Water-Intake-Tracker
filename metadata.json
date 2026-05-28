@@ -1,0 +1,6 @@
+{
+  "name": "Water Intake Tracker",
+  "description": "A high-fidelity multiplatform (Android & iOS) water intake tracker featuring real-time hydration stats, custom reminders, and notification styling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Water Intake Tracker</string>
+    <string name="title_activity_main">Water Intake Tracker</string>
+    <string name="package_name">com.shawnchow.waterintake</string>
+    <string name="custom_url_scheme">com.shawnchow.waterintake</string>
+</resources>

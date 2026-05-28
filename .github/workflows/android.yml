@@ -1,31 +1,41 @@
-name: Android CI / Cloud Build
+name: Android Cloud Build
 
 on:
   push:
-    branches: [ "main" ] # Triggers the build every time you update your code
-  workflow_dispatch: # Allows you to click a button to build manually
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  # Forces the cloud runner to use the updated Node24 runtime environment
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    - name: set up JDK 17
+    - name: Set up Java JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
+        # Disabling gradle cache checks fixes the root folder search error
+        cache: '' 
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Grant Execute Permissions
+      # CHANGE 'Water-Intake-Tracker' to match your exact folder name if different
+      run: chmod +x ./Water-Intake-Tracker/gradlew
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      # Runs the compiler directly inside your project folder
+      run: |
+        cd Water-Intake-Tracker
+        ./gradlew assembleDebug
 
-    - name: Upload APK Artifact
+    - name: Upload Finished APK
       uses: actions/upload-artifact@v4
       with:
         name: my-ai-app-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: Water-Intake-Tracker/app/build/outputs/apk/debug/app-debug.apk

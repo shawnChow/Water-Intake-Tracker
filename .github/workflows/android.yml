@@ -1,4 +1,4 @@
-name: Android CI / Cloud Build
+name: Capacitor Android Cloud Build
 
 on:
   push:
@@ -9,31 +9,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    - name: set up JDK 17
+    - name: Set up Java JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        # Crucial Fix: Tells Java where your nested gradle files live
-        cache-dependency-path: '**/build.gradle*' 
-        cache: gradle
 
-    - name: Grant execute permission for gradlew
-      # Crucial Fix: Finds and marks gradlew executable wherever it is
-      run: find . -name "gradlew" -exec chmod +x {} \; 
-
-    - name: Build Debug APK
-      # Crucial Fix: Searches for gradlew and executes the build inside that directory
+    - name: Build Android APK via Gradle
       run: |
-        GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
-        cd $(dirname "$GRADLEW_PATH")
+        # Navigate directly into the Capacitor android folder
+        cd android
+        
+        # Grant permissions to the compiler tool
+        chmod +x gradlew
+        
+        # Compile the debug app package
         ./gradlew assembleDebug
 
-    - name: Upload APK Artifact
+    - name: Upload Finished APK
       uses: actions/upload-artifact@v4
       with:
-        name: my-ai-app-apk
-        # Crucial Fix: Captures the output APK regardless of folder depth
-        path: '**/build/outputs/apk/debug/*-debug.apk'
+        name: water-tracker-apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk

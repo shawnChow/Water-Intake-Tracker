@@ -1,41 +1,39 @@
-name: Android Cloud Build
+name: Android CI / Cloud Build
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  # Forces the cloud runner to use the updated Node24 runtime environment
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Set up Java JDK 17
+    - name: set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        # Disabling gradle cache checks fixes the root folder search error
-        cache: '' 
+        # Crucial Fix: Tells Java where your nested gradle files live
+        cache-dependency-path: '**/build.gradle*' 
+        cache: gradle
 
-    - name: Grant Execute Permissions
-      # CHANGE 'Water-Intake-Tracker' to match your exact folder name if different
-      run: chmod +x ./Water-Intake-Tracker/gradlew
+    - name: Grant execute permission for gradlew
+      # Crucial Fix: Finds and marks gradlew executable wherever it is
+      run: find . -name "gradlew" -exec chmod +x {} \; 
 
     - name: Build Debug APK
-      # Runs the compiler directly inside your project folder
+      # Crucial Fix: Searches for gradlew and executes the build inside that directory
       run: |
-        cd Water-Intake-Tracker
+        GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
+        cd $(dirname "$GRADLEW_PATH")
         ./gradlew assembleDebug
 
-    - name: Upload Finished APK
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: my-ai-app-apk
-        path: Water-Intake-Tracker/app/build/outputs/apk/debug/app-debug.apk
+        # Crucial Fix: Captures the output APK regardless of folder depth
+        path: '**/build/outputs/apk/debug/*-debug.apk'

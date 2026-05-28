@@ -12,19 +12,18 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Java JDK 17
+    - name: Set up Java JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21' # Crucial Fix: Upgrades JDK from 17 to 21 to match Capacitor requirements
         distribution: 'temurin'
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22' # Ensures correct version matching your local device
+        node-version: '22'
 
     - name: Install Dependencies & Sync Android Engine
-      # Crucial Fix: Installs packages and hooks up the missing :capacitor-android files
       run: |
         npm ci
         npm run build
